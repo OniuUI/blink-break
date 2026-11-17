@@ -10,6 +10,19 @@ Eye doctors recommend the **20-20-20 rule** ([American Academy of Ophthalmology]
 
 Both the interval and the break length can be changed from the tray menu.
 
+## Eye health stats
+
+Click the tray icon, or press **Ctrl+Alt+Shift+B** anywhere, to see how you're doing:
+
+![Eye health stats](docs/stats.png)
+
+- **Today:** breaks taken, time spent resting your eyes, how many slow, full blinks you did with the guide, your longest stretch at the screen without a break, and breaks you skipped.
+- **Break coverage:** breaks taken compared with how many your active screen time called for (one per interval).
+- **Last 7 days:** taken and skipped breaks per day, plus all-time totals and your streak.
+- **How breaks help your eyes:** a short summary of the research, with links to the sources.
+
+Stats stay on your PC in `%APPDATA%\BlinkBreak\stats.csv`. Nothing is sent anywhere.
+
 ## Download
 
 1. Download **`BlinkBreak.exe`** from the [latest release](../../releases/latest).
@@ -22,9 +35,10 @@ Requires Windows 10 or 11. No installer and no dependencies: it uses the .NET Fr
 
 ## Using it
 
-- **During a break:** press **Esc** (or click "Press Esc to skip") if you really need to get out early.
-- **Hover or left-click** the tray icon to see when the next break is.
+- **During a break:** press **Esc** (or click "Press Esc to skip") if you really need to get out early. Esc works even when another window has keyboard focus, such as a full-screen video.
+- **Left-click** the tray icon (or press **Ctrl+Alt+Shift+B**) to open your eye health stats. Hover over it to see when the next break is.
 - **Right-click** the tray icon for these options:
+  - Eye health stats
   - Take a blink break now
   - Pause for 1 hour
   - Break every 10 / 15 / 20 / 30 / 45 / 60 minutes
@@ -38,11 +52,16 @@ It also handles a few situations on its own:
 - Restarts the timer when you **unlock** your PC or it **wakes from sleep**, so you don't get a break the moment you come back.
 - Puts the break off by a minute while a **full-screen game** or **presentation mode** is running, so you don't get kicked out of the game. Full-screen video still gets breaks.
 
-Settings are stored in `%APPDATA%\BlinkBreak\settings.ini`.
+Settings are stored in `%APPDATA%\BlinkBreak\settings.ini`. A small diagnostic log (`blinkbreak.log`) in the same folder records breaks, errors, and any freezes. Please attach it if you report a bug.
+
+Command line (also works while Blink Break is already running):
+
+- `BlinkBreak.exe --break-now` starts a break right away.
+- `BlinkBreak.exe --stats` opens the stats window.
 
 ## Uninstall
 
-Right-click the tray icon, untick **Start with Windows**, choose **Exit**, then delete the exe and the `%APPDATA%\BlinkBreak` folder. If you cloned the repo, you can run `uninstall.cmd` instead, which does all of that.
+Right-click the tray icon, untick **Start with Windows**, choose **Exit**, then delete the exe and the `%APPDATA%\BlinkBreak` folder (this also deletes your stats). If you cloned the repo, you can run `uninstall.cmd` instead, which does all of that.
 
 ## Build from source
 
@@ -55,7 +74,7 @@ build.cmd        :: produces bin\BlinkBreak.exe
 install.cmd      :: builds, copies to %LOCALAPPDATA%\Programs\BlinkBreak and starts it
 ```
 
-All the code is in [`src/BlinkBreak.cs`](src/BlinkBreak.cs) (a single file, C# 5 / WinForms). The app draws its own icon, and `build.cmd` embeds it into the exe.
+The code is in [`src/`](src) (C# 5 / WinForms, about 1,700 lines). `TrayApp.cs` runs the timer and tray menu, `BreakForm.cs` is the full-screen break, `StatsForm.cs` is the stats window, and `Stats.cs` stores the history. The app draws its own icon, and `build.cmd` embeds it into the exe.
 
 ## Disclaimer
 
