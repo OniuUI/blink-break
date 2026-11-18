@@ -1,6 +1,9 @@
 # Blink Break
 
-A tiny, free Windows app that reminds you to rest your eyes. Every 20 minutes it covers your screen for 20 seconds with a gentle **blink break**: an animated eye blinks slowly so you can blink along with it, then you look at something far away.
+A tiny, free Windows app that looks after your eyes and reminds you to drink water.
+
+- **Blink breaks:** every 20 minutes it covers your screen for 20 seconds. An animated eye blinks slowly so you can blink along with it, then you look at something far away.
+- **Water:** gentle reminders to drink, one-key logging, and a daily goal based on European and US guidelines.
 
 ![Blink Break overlay](docs/screenshot.png)
 
@@ -23,6 +26,33 @@ Click the tray icon, or press **Ctrl+Alt+Shift+B** anywhere, to see how you're d
 
 Stats stay on your PC in `%APPDATA%\BlinkBreak\stats.csv`. Nothing is sent anywhere.
 
+## Water and hydration
+
+![Hydration tab](docs/water.png)
+
+**How much to drink?** Europe's food-safety agency ([EFSA, 2010](https://www.efsa.europa.eu/en/press/news/nda100326)) sets adequate intakes of **2.0 L of water a day for women and 2.5 L for men**, from food and drinks together. About 20% usually comes from food, which leaves roughly **1.6 L (women) and 2.0 L (men) to drink**. The [US National Academies](https://www.nationalacademies.org/news/report-sets-dietary-intake-levels-for-water-salt-and-potassium-to-maintain-health-and-reduce-chronic-disease-risk) set higher totals (2.7 L and 3.7 L). Both assume mild weather and light activity, so drink more in heat or when you exercise. In lab studies, losing just 1–2% of body water made people more tired and lowered their mood and concentration ([Ganio et al., 2011](https://www.cambridge.org/core/journals/british-journal-of-nutrition/article/mild-dehydration-impairs-cognitive-performance-and-mood-of-men/3388AB36B8DF73E844C9AD19271A75BF)).
+
+The default goal is **2.0 L a day**. Change it under **Water settings → Daily goal** in the tray menu.
+
+**Logging a drink** takes one step:
+
+- Press **Ctrl+Alt+Shift+W** anywhere to log a glass (250 ml by default).
+- Click **I drank 250 ml** on a reminder.
+- Choose **Log a glass of water** in the tray menu.
+- Use the **+ glass / + bottle / + sip** buttons on the Water tab.
+
+A small confirmation with an **Undo** button appears after each one.
+
+**Reminders** pop up in the bottom-right corner after every 60 minutes of screen time since your last drink:
+
+![Water reminder](docs/reminder.png)
+
+They never take keyboard focus. You can **snooze** one for 15 minutes or just ignore it, and they stop once you reach your goal for the day. Change the interval or turn them off under **Water settings → Remind me**. You can also change your glass size there. **Pause reminders for 1 hour** pauses both blink breaks and water reminders.
+
+The Water tab shows today's progress and whether you're on pace, your last drink, your goal streak, a 7-day chart, and a short research summary with sources. Open it from the tray menu (**Water & hydration**) or the tab at the top of the stats window. Every drink is stored in `%APPDATA%\BlinkBreak\water.csv`.
+
+> Not medical advice. If a doctor has limited how much you drink (for example for heart or kidney problems), follow their advice.
+
 ## Download
 
 1. Download **`BlinkBreak.exe`** from the [latest release](../../releases/latest).
@@ -38,11 +68,13 @@ Requires Windows 10 or 11. No installer and no dependencies: it uses the .NET Fr
 - **During a break:** press **Esc** (or click "Press Esc to skip") if you really need to get out early. Esc works even when another window has keyboard focus, such as a full-screen video.
 - **Left-click** the tray icon (or press **Ctrl+Alt+Shift+B**) to open your eye health stats. Hover over it to see when the next break is.
 - **Right-click** the tray icon for these options:
-  - Eye health stats
+  - Eye health stats / Water & hydration
+  - Log a glass of water / Undo last drink
   - Take a blink break now
-  - Pause for 1 hour
+  - Pause reminders for 1 hour
   - Break every 10 / 15 / 20 / 30 / 45 / 60 minutes
   - Break length 10 / 15 / 20 / 30 / 60 seconds
+  - Water settings: daily goal, glass size, reminder interval
   - Start with Windows (on/off)
   - Exit
 
@@ -58,10 +90,11 @@ Command line (also works while Blink Break is already running):
 
 - `BlinkBreak.exe --break-now` starts a break right away.
 - `BlinkBreak.exe --stats` opens the stats window.
+- `BlinkBreak.exe --water` opens the Water tab.
 
 ## Uninstall
 
-Right-click the tray icon, untick **Start with Windows**, choose **Exit**, then delete the exe and the `%APPDATA%\BlinkBreak` folder (this also deletes your stats). If you cloned the repo, you can run `uninstall.cmd` instead, which does all of that.
+Right-click the tray icon, untick **Start with Windows**, choose **Exit**, then delete the exe and the `%APPDATA%\BlinkBreak` folder (this also deletes your stats and water log). If you cloned the repo, you can run `uninstall.cmd` instead, which does all of that.
 
 ## Build from source
 
@@ -74,11 +107,11 @@ build.cmd        :: produces bin\BlinkBreak.exe
 install.cmd      :: builds, copies to %LOCALAPPDATA%\Programs\BlinkBreak and starts it
 ```
 
-The code is in [`src/`](src) (C# 5 / WinForms, about 1,700 lines). `TrayApp.cs` runs the timer and tray menu, `BreakForm.cs` is the full-screen break, `StatsForm.cs` is the stats window, and `Stats.cs` stores the history. The app draws its own icon, and `build.cmd` embeds it into the exe.
+The code is in [`src/`](src) (C# 5 / WinForms). `TrayApp.cs` runs the timers and tray menu, `BreakForm.cs` is the full-screen break, `StatsForm.cs` is the stats window, `WaterToast.cs` is the reminder pop-up, and `Stats.cs` / `WaterLog.cs` store the history. The app draws its own icon, and `build.cmd` embeds it into the exe.
 
 ## Disclaimer
 
-Blink Break is a reminder tool, not medical advice. If you have persistent eye strain, dryness, or headaches, see an eye-care professional.
+Blink Break is a reminder tool, not medical advice. If you have persistent eye strain, dryness, or headaches, see an eye-care professional. If a doctor has given you a fluid limit, follow it instead of the water goal here.
 
 ## License
 

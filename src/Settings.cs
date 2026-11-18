@@ -9,6 +9,10 @@ namespace BlinkBreak
     {
         public int IntervalMinutes = 20;
         public int BreakSeconds = 20;
+        public int WaterGoalMl = 2000;           // EFSA: ~2.0 L (men) / ~1.6 L (women) to drink per day
+        public int GlassMl = 250;
+        public int WaterReminderMinutes = 60;    // minutes of screen time between reminders; 0 = off
+        public int WaterIntroShown;
         public bool FirstRun;
 
         static string FilePath { get { return Path.Combine(Program.DataDir, "settings.ini"); } }
@@ -28,6 +32,10 @@ namespace BlinkBreak
                     if (!int.TryParse(raw.Substring(eq + 1).Trim(), out value)) continue;
                     if (key == "IntervalMinutes") s.IntervalMinutes = Clamp(value, 1, 240);
                     else if (key == "BreakSeconds") s.BreakSeconds = Clamp(value, 5, 300);
+                    else if (key == "WaterGoalMl") s.WaterGoalMl = Clamp(value, 500, 6000);
+                    else if (key == "GlassMl") s.GlassMl = Clamp(value, 50, 1500);
+                    else if (key == "WaterReminderMinutes") s.WaterReminderMinutes = Clamp(value, 0, 480);
+                    else if (key == "WaterIntroShown") s.WaterIntroShown = Clamp(value, 0, 1);
                 }
             }
             catch { }
@@ -42,7 +50,11 @@ namespace BlinkBreak
                 File.WriteAllLines(FilePath, new[]
                 {
                     "IntervalMinutes=" + IntervalMinutes,
-                    "BreakSeconds=" + BreakSeconds
+                    "BreakSeconds=" + BreakSeconds,
+                    "WaterGoalMl=" + WaterGoalMl,
+                    "GlassMl=" + GlassMl,
+                    "WaterReminderMinutes=" + WaterReminderMinutes,
+                    "WaterIntroShown=" + WaterIntroShown
                 });
             }
             catch { }

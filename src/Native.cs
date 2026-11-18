@@ -95,12 +95,14 @@ namespace BlinkBreak
         const int WM_HOTKEY = 0x0312;
         const int WM_SHOW_STATS = 0x8000 + 1;          // WM_APP + 1
         const int WM_BREAK_NOW = 0x8000 + 2;
+        const int WM_SHOW_WATER = 0x8000 + 3;
         static readonly IntPtr HWND_MESSAGE = new IntPtr(-3);
 
         readonly HashSet<int> registered = new HashSet<int>();
         public event Action<int> HotkeyPressed;
         public event Action ShowStatsRequested;
         public event Action BreakNowRequested;
+        public event Action ShowWaterRequested;
 
         public MessageWindow()
         {
@@ -123,12 +125,13 @@ namespace BlinkBreak
             if (registered.Remove(id)) Native.UnregisterHotKey(Handle, id);
         }
 
-        public static bool SignalRunningInstance(bool breakNow)
+        public static bool SignalRunningInstance(bool breakNow, bool showWater)
         {
             IntPtr h = Native.FindWindowEx(HWND_MESSAGE, IntPtr.Zero, null, Caption);
             if (h == IntPtr.Zero) return false;
             Native.AllowSetForegroundWindow(-1);      // let the running copy bring its window to the front
-            return Native.PostMessage(h, breakNow ? WM_BREAK_NOW : WM_SHOW_STATS, IntPtr.Zero, IntPtr.Zero);
+            int msg = breakNow ? WM_BREAK_NOW : (showWater ? WM_SHOW_WATER : WM_SHOW_STATS);
+            return Native.PostMessage(h, msg, IntPtr.Zero, IntPtr.Zero);
         }
 
         protected override void WndProc(ref Message m)
@@ -136,6 +139,11 @@ namespace BlinkBreak
             if (m.Msg == WM_HOTKEY)
             {
                 if (HotkeyPressed != null) HotkeyPressed(m.WParam.ToInt32());
+                return;
+            }
+            if (m.Msg == WM_SHOW_WATER)
+            {
+                if (ShowWaterRequested != null) ShowWaterRequested();
                 return;
             }
             if (m.Msg == WM_BREAK_NOW)

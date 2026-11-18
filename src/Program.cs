@@ -10,15 +10,15 @@ using System.Windows.Forms;
 
 [assembly: System.Reflection.AssemblyTitle("Blink Break")]
 [assembly: System.Reflection.AssemblyProduct("Blink Break")]
-[assembly: System.Reflection.AssemblyDescription("Reminds you to take regular blink breaks")]
-[assembly: System.Reflection.AssemblyVersion("1.1.0.0")]
-[assembly: System.Reflection.AssemblyFileVersion("1.1.0.0")]
+[assembly: System.Reflection.AssemblyDescription("Reminds you to take blink breaks and drink water")]
+[assembly: System.Reflection.AssemblyVersion("1.2.0.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.2.0.0")]
 
 namespace BlinkBreak
 {
     static class Program
     {
-        public const string Version = "1.1.0";
+        public const string Version = "1.2.0";
 
         public static string DataDir
         {
@@ -40,10 +40,11 @@ namespace BlinkBreak
             using (var mutex = new Mutex(true, "BlinkBreak.SingleInstance", out createdNew))
             {
                 bool breakNow = Array.IndexOf(args, "--break-now") >= 0;
+                bool showWater = Array.IndexOf(args, "--water") >= 0;
                 if (!createdNew)
                 {
                     // Already running: ask that copy to start a break, or to open its stats window.
-                    if (!MessageWindow.SignalRunningInstance(breakNow))
+                    if (!MessageWindow.SignalRunningInstance(breakNow, showWater))
                         MessageBox.Show("Blink Break is already running.\n\nLook for the eye icon in the system tray (bottom right, next to the clock).",
                             "Blink Break", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
@@ -53,7 +54,7 @@ namespace BlinkBreak
                 Application.SetCompatibleTextRenderingDefault(false);
                 Log.Install();
                 bool showStats = Array.IndexOf(args, "--stats") >= 0;
-                Application.Run(new TrayApp(breakNow, showStats));
+                Application.Run(new TrayApp(breakNow, showStats, showWater));
                 GC.KeepAlive(mutex);
             }
         }

@@ -215,4 +215,45 @@ namespace BlinkBreak
         }
     }
 
+    static class DropArt
+    {
+        public static GraphicsPath Path(float cx, float cy, float h)
+        {
+            float r = h * 0.34f;
+            float top = cy - h / 2f;
+            float circleY = cy + h / 2f - r;
+            var p = new GraphicsPath();
+            p.AddBezier(cx, top, cx + r * 0.25f, top + h * 0.22f, cx + r, circleY - r * 0.75f, cx + r, circleY);
+            p.AddArc(cx - r, circleY - r, 2 * r, 2 * r, 0, 180);
+            p.AddBezier(cx - r, circleY, cx - r, circleY - r * 0.75f, cx - r * 0.25f, top + h * 0.22f, cx, top);
+            p.CloseFigure();
+            return p;
+        }
+
+        // fill: 0..1 water level inside the drop (1 = full)
+        public static void Draw(Graphics g, float cx, float cy, float h, float fill)
+        {
+            fill = Math.Max(0f, Math.Min(1f, fill));
+            using (var path = Path(cx, cy, h))
+            {
+                using (var b = new SolidBrush(Color.FromArgb(34, 52, 86))) g.FillPath(b, path);
+
+                GraphicsState state = g.Save();
+                g.SetClip(path, CombineMode.Intersect);
+                float top = cy - h / 2f;
+                float level = top + h * (1f - fill);
+                var water = new RectangleF(cx - h, level, 2 * h, cy + h / 2f - level + 1);
+                if (water.Height > 0.5f)
+                    using (var b = new LinearGradientBrush(new RectangleF(cx - h, top, 2 * h, h + 1),
+                                                           Color.FromArgb(120, 214, 255), Color.FromArgb(30, 120, 220), 90f))
+                        g.FillRectangle(b, water);
+                g.Restore(state);
+
+                using (var pen = new Pen(Color.FromArgb(150, 205, 240), Math.Max(1f, h * 0.05f))) g.DrawPath(pen, path);
+                float hr = h * 0.09f;
+                using (var b = new SolidBrush(Color.FromArgb(200, 255, 255, 255)))
+                    g.FillEllipse(b, cx - h * 0.17f - hr, cy + h * 0.08f - hr, 2 * hr, 2 * hr * 1.4f);
+            }
+        }
+    }
 }
